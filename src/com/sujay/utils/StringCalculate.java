@@ -3,13 +3,37 @@ package com.sujay.utils;
 public class StringCalculate {
 
     public int add(String numbers) {
-        if(numbers!=null && !numbers.isEmpty()){
-            String[] numberArr = numbers.split(",");
-            if(numberArr.length==1)
-                return Integer.parseInt(numberArr[0]);
-            else
-                return Integer.parseInt(numberArr[0])+Integer.parseInt(numberArr[1]);
+        int result = 0;
+
+        if (numbers != null && numbers.length() != 0) {
+            String[] numberArr;
+            String delim = "[\n,]";
+            if (numbers.startsWith("/")) {
+                int startIndex = 2;
+                int endIndex = numbers.indexOf("\n");
+
+                delim = numbers.substring(startIndex, endIndex);  //numbers.charAt(2) was used previously, modified if delim size increases
+
+                numbers = numbers.substring(endIndex + 1);
+                numberArr = numbers.split("[\n" + delim + "]");
+
+            } else {
+                numberArr = numbers.split(delim);
             }
-        return 0;
+
+            for (String val : numberArr) {
+                if (val.length() != 0) {
+
+                    try {
+                        result = Math.addExact(result, Integer.parseInt(val));   //addExact throws exception if any overflow/underflow would be there in integer addition#Java 1.8 or above reqd.
+                    } catch (NumberFormatException e) {
+                        throw new NumberFormatException("Value \"" + val + "\" is not in int range");
+                    } catch (ArithmeticException e) {
+                        throw new ArithmeticException("Integer Overflow!");
+                    }
+                }
+            }
+        }
+        return result;
     }
 }
